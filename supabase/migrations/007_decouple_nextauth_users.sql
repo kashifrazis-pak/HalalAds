@@ -1,6 +1,9 @@
 -- Remove FK to auth.users — NextAuth manages auth, not Supabase Auth
 alter table public.users drop constraint if exists users_id_fkey;
 
+-- Add a default so new rows get a UUID when inserted without specifying id
+alter table public.users alter column id set default gen_random_uuid();
+
 -- Allow role to be null until the user completes onboarding
 alter table public.users drop constraint if exists users_role_check;
 alter table public.users alter column role drop not null;
