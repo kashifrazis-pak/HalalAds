@@ -149,7 +149,7 @@ export default function AdvertisersPage() {
                   Reach the right Muslim audience
                 </h2>
                 <p className="text-brand-muted leading-relaxed mb-8">
-                  Generic ad networks treat Muslim consumers as an afterthought. HalalAds was
+                  Generic ad networks treat Muslim consumers as an afterthought. Islamic Ad Network was
                   built from the ground up with the targeting categories that matter most to
                   halal brands — from Islamic finance to modest fashion.
                 </p>

@@ -1,4 +1,4 @@
-# HalalAds — Claude Project Context
+# Islamic Ad Network — Claude Project Context
 
 ## Mission
 Build the world's #1 halal advertising network, serving 1.8 billion Muslims globally. Competing directly with Google AdSense/Ads and Meta Ads by offering a Shariah-compliant, culturally-aware alternative. Think big — this is meant to be the dominant ad network for the entire Muslim world.
@@ -64,7 +64,7 @@ We serve Muslims across very different cultures — Indonesian, Pakistani, Arab,
 ## Project Structure
 
 ```
-HalalAds/
+Islamic Ad Network/
 └── apps/
     └── web/                          ← Next.js 14 App Router project
         ├── app/
@@ -210,7 +210,7 @@ clicks        (id, impression_id, timestamp, ip_hash)
 
 ---
 
-## What Makes HalalAds Different (Always Keep in Mind)
+## What Makes Islamic Ad Network Different (Always Keep in Mind)
 
 1. **100% halal inventory** — every publisher manually reviewed, no exceptions
 2. **Cultural intelligence** — not just translation, but genuine understanding of Muslim consumer psychology

@@ -43,7 +43,7 @@ describe("GET /api/track/click", () => {
     const res = await clickGET(req);
     expect(res.status).toBe(302);
     const location = res.headers.get("location");
-    expect(location).toContain("utm_source=halalads");
+    expect(location).toContain("utm_source=islamicadnetwork");
     expect(location).toContain("utm_medium=display");
   });
 

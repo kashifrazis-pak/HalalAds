@@ -10,7 +10,7 @@ import {
 export const metadata: Metadata = {
   title: "Publisher Network — Monetize Your Muslim Audience",
   description:
-    "Join the HalalAds publisher network. Earn up to 70% revenue share by showing halal-compliant ads on your website. No alcohol, no gambling — ever.",
+    "Join the Islamic Ad Network publisher network. Earn up to 70% revenue share by showing halal-compliant ads on your website. No alcohol, no gambling — ever.",
 };
 
 const benefits = [
@@ -21,7 +21,7 @@ const benefits = [
   },
   {
     icon: ShieldCheck,
-    title: "100% Halal Ads",
+    title: "100% Islamic Ad Network",
     desc: "Every ad on our network is manually reviewed. No alcohol, gambling, adult content, or riba-based financial products.",
   },
   {
@@ -142,13 +142,13 @@ export default function PublishersPage() {
         <section className="py-24 bg-white">
           <div className="container-brand">
             <div className="text-center max-w-xl mx-auto mb-16">
-              <span className="badge-green mb-4">Why HalalAds</span>
+              <span className="badge-green mb-4">Why Islamic Ad Network</span>
               <h2 className="font-display text-4xl font-bold text-brand-charcoal mt-4 mb-4">
                 Built for Muslim publishers
               </h2>
               <p className="text-brand-muted">
                 Generic ad networks serve your audience ads for alcohol, betting, and worse.
-                HalalAds guarantees every ad placement is 100% halal.
+                Islamic Ad Network guarantees every ad placement is 100% halal.
               </p>
             </div>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -204,7 +204,7 @@ export default function PublishersPage() {
                     <span className="text-white/30 text-xs ml-3">index.html</span>
                   </div>
                   <div className="p-6 font-mono text-sm">
-                    <div className="text-white/40">{`<!-- HalalAds Ad Unit -->`}</div>
+                    <div className="text-white/40">{`<!-- Islamic Ad Network Ad Unit -->`}</div>
                     <div className="text-white/70 mt-1">{`<`}<span className="text-brand-gold">div</span></div>
                     <div className="text-white/70 ml-4">
                       <span className="text-brand-gold-light">id</span>=<span className="text-green-400">&quot;ha-ad-unit&quot;</span>
@@ -219,7 +219,7 @@ export default function PublishersPage() {
                     <div className="mt-3 text-white/70">
                       {`<`}<span className="text-brand-gold">script</span>
                       <span className="text-brand-gold-light"> src</span>=
-                      <span className="text-green-400">&quot;//cdn.halalads.com/a.js&quot;</span>
+                      <span className="text-green-400">&quot;//cdn.islamicadnetwork.com/a.js&quot;</span>
                       {`>`}{`</`}<span className="text-brand-gold">script</span>{`>`}
                     </div>
                   </div>

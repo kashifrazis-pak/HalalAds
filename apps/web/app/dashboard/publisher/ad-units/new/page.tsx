@@ -23,13 +23,13 @@ export default function NewAdUnitPage() {
   const [copied, setCopied] = useState(false);
 
   const pubId = "PUB_" + Math.random().toString(36).substring(2, 10).toUpperCase();
-  const snippet = `<!-- HalalAds Ad Unit: ${name || "My Ad Unit"} -->
+  const snippet = `<!-- Islamic Ad Network Ad Unit: ${name || "My Ad Unit"} -->
 <div
   id="ha-ad-unit"
   data-pub="${pubId}"
   data-size="${size}"
 ></div>
-<script src="//cdn.halalads.com/a.js" async></script>`;
+<script src="//cdn.islamicadnetwork.com/a.js" async></script>`;
 
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault();

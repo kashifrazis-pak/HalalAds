@@ -1,8 +1,8 @@
-# HalalAds — Testing Guide
+# Islamic Ad Network — Testing Guide
 
 ## Overview
 
-HalalAds uses a three-layer testing strategy to ensure quality across every environment:
+Islamic Ad Network uses a three-layer testing strategy to ensure quality across every environment:
 
 | Layer | Framework | Location | Coverage target |
 |---|---|---|---|
@@ -104,7 +104,7 @@ NEXTAUTH_URL=http://localhost:3001
 | TC-U-031 | Missing aid or pub | 204 |
 | TC-U-032 | No-cache headers set | `no-store` in Cache-Control |
 | TC-U-033 | CORS header present | `access-control-allow-origin: *` |
-| TC-U-034 | Click redirect with UTM params | 302, utm_source=halalads, utm_medium=display |
+| TC-U-034 | Click redirect with UTM params | 302, utm_source=islamicadnetwork, utm_medium=display |
 | TC-U-035 | Click with missing URL | 302 (fallback home) |
 | TC-U-036 | Click with invalid URL | 302 (fallback home) |
 
@@ -186,7 +186,7 @@ NEXTAUTH_URL=http://localhost:3001
 | TC-E-003 | Navbar visible with brand | "Ads" text visible |
 | TC-E-004 | Nav link to Advertisers works | URL contains `/advertisers` |
 | TC-E-005 | Get Started navigates to waitlist | URL contains `/waitlist` |
-| TC-E-006 | Page title contains HalalAds | `<title>` matches |
+| TC-E-006 | Page title contains Islamic Ad Network | `<title>` matches |
 | TC-E-007 | Footer is visible | `<footer>` in DOM |
 | TC-E-008 | No console errors on load | Zero error-level console logs |
 
@@ -226,7 +226,7 @@ NEXTAUTH_URL=http://localhost:3001
 | TC-E-042 | Magic link email input present | Input visible |
 | TC-E-043 | `/dashboard/advertiser` redirects to sign-in | URL contains `/auth/signin` |
 | TC-E-044 | `/dashboard/publisher` redirects to sign-in | URL contains `/auth/signin` |
-| TC-E-045 | Sign-in page title | Contains "HalalAds" |
+| TC-E-045 | Sign-in page title | Contains "Islamic Ad Network" |
 
 #### `api-tracking.spec.ts`
 | ID | Description | Expected |

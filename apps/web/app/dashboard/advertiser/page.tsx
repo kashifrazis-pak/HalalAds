@@ -37,7 +37,7 @@ export default async function AdvertiserOverviewPage() {
       <div className="bg-gradient-brand rounded-2xl p-6 mb-8 flex items-center justify-between gap-6">
         <div>
           <h3 className="font-display text-lg font-bold text-white mb-1">
-            Welcome to HalalAds!
+            Welcome to Islamic Ad Network!
           </h3>
           <p className="text-white/75 text-sm">
             You&apos;re in. Create your first campaign and start reaching Muslim audiences today.

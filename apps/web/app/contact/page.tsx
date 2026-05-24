@@ -57,8 +57,8 @@ export default function ContactPage() {
                     <Mail size={18} className="text-brand-green" />
                   </div>
                   <h3 className="font-semibold text-brand-charcoal mb-1">General enquiries</h3>
-                  <a href="mailto:hello@halalads.com" className="text-brand-green text-sm hover:underline">
-                    hello@halalads.com
+                  <a href="mailto:hello@islamicadnetwork.com" className="text-brand-green text-sm hover:underline">
+                    hello@islamicadnetwork.com
                   </a>
                 </div>
                 <div className="card-brand p-6">
@@ -66,8 +66,8 @@ export default function ContactPage() {
                     <Building2 size={18} className="text-brand-green" />
                   </div>
                   <h3 className="font-semibold text-brand-charcoal mb-1">Enterprise sales</h3>
-                  <a href="mailto:sales@halalads.com" className="text-brand-green text-sm hover:underline">
-                    sales@halalads.com
+                  <a href="mailto:sales@islamicadnetwork.com" className="text-brand-green text-sm hover:underline">
+                    sales@islamicadnetwork.com
                   </a>
                 </div>
                 <div className="card-brand p-6">
@@ -75,8 +75,8 @@ export default function ContactPage() {
                     <MessageSquare size={18} className="text-brand-green" />
                   </div>
                   <h3 className="font-semibold text-brand-charcoal mb-1">Press & media</h3>
-                  <a href="mailto:press@halalads.com" className="text-brand-green text-sm hover:underline">
-                    press@halalads.com
+                  <a href="mailto:press@islamicadnetwork.com" className="text-brand-green text-sm hover:underline">
+                    press@islamicadnetwork.com
                   </a>
                 </div>
 

@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
   // Redirect to destination with cache-bust
   try {
     const url = new URL(dest);
-    url.searchParams.set("utm_source", "halalads");
+    url.searchParams.set("utm_source", "islamicadnetwork");
     url.searchParams.set("utm_medium", "display");
     return NextResponse.redirect(url.toString(), {
       status: 302,

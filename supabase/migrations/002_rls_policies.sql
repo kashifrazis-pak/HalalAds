@@ -1,5 +1,5 @@
 -- =============================================================================
--- HalalAds — Row Level Security Policies
+-- Islamic Ad Network — Row Level Security Policies
 -- Migration: 002_rls_policies
 -- Run AFTER 001_initial_schema.sql
 -- =============================================================================

@@ -57,7 +57,7 @@ function SignInForm() {
           ) : (
             <>
               <h1 className="font-display text-2xl font-bold text-brand-charcoal mb-1">Welcome back</h1>
-              <p className="text-brand-muted text-sm mb-7">Sign in to your HalalAds account</p>
+              <p className="text-brand-muted text-sm mb-7">Sign in to your Islamic Ad Network account</p>
 
               {/* Google */}
               <button

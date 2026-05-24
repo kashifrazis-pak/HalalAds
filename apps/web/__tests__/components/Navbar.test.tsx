@@ -8,7 +8,7 @@ import Navbar from "@/components/layout/Navbar";
 describe("Navbar", () => {
   it("TC-C-010: renders brand name", () => {
     render(<Navbar />);
-    expect(screen.getByText("Ads")).toBeInTheDocument();
+    expect(screen.getByText("AdNetwork")).toBeInTheDocument();
   });
 
   it("TC-C-011: renders all nav links", () => {

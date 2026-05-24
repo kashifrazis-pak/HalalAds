@@ -59,7 +59,7 @@ export default function HeroSection() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-white/75 text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed mb-10"
           >
-            HalalAds is the world&apos;s first dedicated halal advertising network.
+            Islamic Ad Network is the world&apos;s first dedicated halal advertising network.
             Connect your brand with 1.8 billion Muslim consumers across Southeast
             Asia, the Middle East, and beyond — with Shariah-compliant precision.
           </motion.p>

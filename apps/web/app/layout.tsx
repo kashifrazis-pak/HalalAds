@@ -3,10 +3,10 @@ import Script from "next/script";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://halalads.com"),
+  metadataBase: new URL("https://islamicadnetwork.com"),
   title: {
-    default: "HalalAds — Reach the Muslim World",
-    template: "%s | HalalAds",
+    default: "Islamic Ad Network — Reach the Muslim World",
+    template: "%s | Islamic Ad Network",
   },
   description:
     "The world's leading halal advertising network. Reach 1.8 billion Muslims across Southeast Asia, the Middle East, and beyond with precision-targeted, Shariah-compliant campaigns.",
@@ -15,19 +15,19 @@ export const metadata: Metadata = {
     "islamic finance ads", "halal ad network", "muslim consumers",
     "halal publisher network", "muslim audience", "islamic advertising",
   ],
-  authors: [{ name: "HalalAds" }],
-  creator: "HalalAds",
+  authors: [{ name: "Islamic Ad Network" }],
+  creator: "Islamic Ad Network",
   openGraph: {
     type: "website",
-    siteName: "HalalAds",
-    title: "HalalAds — Reach the Muslim World",
+    siteName: "Islamic Ad Network",
+    title: "Islamic Ad Network — Reach the Muslim World",
     description: "The world's leading halal advertising network. Reach 1.8 billion Muslims globally.",
-    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "HalalAds — Reach the Muslim World" }],
+    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "Islamic Ad Network — Reach the Muslim World" }],
   },
   twitter: {
     card: "summary_large_image",
-    site: "@halalads",
-    title: "HalalAds — Reach the Muslim World",
+    site: "@islamicadnetwork",
+    title: "Islamic Ad Network — Reach the Muslim World",
     description: "Reach 1.8 billion Muslims with Shariah-compliant advertising.",
     images: ["/og-image.png"],
   },
@@ -44,9 +44,9 @@ export const metadata: Metadata = {
 const structuredData = {
   "@context": "https://schema.org",
   "@type": "Organization",
-  name: "HalalAds",
-  url: "https://halalads.com",
-  logo: "https://halalads.com/logo.png",
+  name: "Islamic Ad Network",
+  url: "https://islamicadnetwork.com",
+  logo: "https://islamicadnetwork.com/logo.png",
   description: "The world's leading halal advertising network.",
   sameAs: [
     "https://twitter.com/halalads",
@@ -55,7 +55,7 @@ const structuredData = {
   ],
   contactPoint: {
     "@type": "ContactPoint",
-    email: "hello@halalads.com",
+    email: "hello@islamicadnetwork.com",
     contactType: "customer service",
   },
 };

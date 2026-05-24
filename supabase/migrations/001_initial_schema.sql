@@ -1,5 +1,5 @@
 -- =============================================================================
--- HalalAds — Initial Schema
+-- Islamic Ad Network — Initial Schema
 -- Migration: 001_initial_schema
 -- Run in: Supabase SQL Editor (staging first, then production)
 -- =============================================================================

@@ -32,7 +32,7 @@ test.describe("Homepage", () => {
     await expect(page).toHaveURL(/\/waitlist/);
   });
 
-  test("TC-E-006: page title contains HalalAds", async ({ page }) => {
+  test("TC-E-006: page title contains Islamic Ad Network", async ({ page }) => {
     await expect(page).toHaveTitle(/halalads/i);
   });
 

@@ -35,7 +35,7 @@ export default function WaitlistSection() {
               Join the waitlist
             </h2>
             <p className="text-brand-muted">
-              Be among the first to access HalalAds. Founding members get exclusive
+              Be among the first to access Islamic Ad Network. Founding members get exclusive
               rates and priority onboarding.
             </p>
           </motion.div>

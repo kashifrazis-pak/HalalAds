@@ -1,4 +1,4 @@
-# HalalAds — Supabase Setup Guide
+# Islamic Ad Network — Supabase Setup Guide
 
 ## Step 1 — Create two Supabase projects
 

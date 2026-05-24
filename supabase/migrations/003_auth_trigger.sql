@@ -1,5 +1,5 @@
 -- =============================================================================
--- HalalAds — Auth User Sync Trigger
+-- Islamic Ad Network — Auth User Sync Trigger
 -- Migration: 003_auth_trigger
 -- Run AFTER 001 and 002.
 --

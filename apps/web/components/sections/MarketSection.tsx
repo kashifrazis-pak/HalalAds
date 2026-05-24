@@ -42,7 +42,7 @@ export default function MarketSection() {
               nuance, language, or Shariah compliance.
             </p>
             <p className="text-white/70 leading-relaxed mb-10">
-              HalalAds is purpose-built to bridge this gap — with native understanding
+              Islamic Ad Network is purpose-built to bridge this gap — with native understanding
               of Islamic values, multilingual support, and a publisher network rooted
               in halal content.
             </p>

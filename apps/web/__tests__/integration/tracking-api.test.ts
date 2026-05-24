@@ -62,7 +62,7 @@ describe("Click tracking — integration", () => {
     const res = await clickGET(req);
     expect(res.status).toBe(302);
     const loc = res.headers.get("location") ?? "";
-    expect(loc).toContain("utm_source=halalads");
+    expect(loc).toContain("utm_source=islamicadnetwork");
     expect(loc).toContain("utm_medium=display");
   });
 

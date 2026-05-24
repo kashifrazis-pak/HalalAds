@@ -45,7 +45,7 @@ export default function Navbar() {
                 scrolled ? "text-brand-charcoal" : "text-white"
               )}
             >
-              Halal<span className="text-brand-gold">Ads</span>
+              Islamic<span className="text-brand-gold">AdNetwork</span>
             </span>
           </Link>
 

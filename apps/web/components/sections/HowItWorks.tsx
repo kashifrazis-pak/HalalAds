@@ -111,7 +111,7 @@ export default function HowItWorks() {
           </h2>
           <p className="text-brand-muted">
             Whether you&apos;re a global brand looking to reach Muslim consumers or a
-            website owner wanting to monetize halal traffic — HalalAds makes it
+            website owner wanting to monetize halal traffic — Islamic Ad Network makes it
             effortless.
           </p>
         </motion.div>

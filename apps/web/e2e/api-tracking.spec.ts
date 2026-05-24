@@ -26,7 +26,7 @@ test.describe("Ad Tracking API", () => {
     const res = await request.get(`/api/track/click?aid=ad_1&url=${dest}`, { maxRedirects: 0 });
     expect(res.status()).toBe(302);
     const loc = res.headers()["location"] ?? "";
-    expect(loc).toContain("utm_source=halalads");
+    expect(loc).toContain("utm_source=islamicadnetwork");
   });
 
   test("TC-E-054: click with no URL redirects to home", async ({ request }) => {

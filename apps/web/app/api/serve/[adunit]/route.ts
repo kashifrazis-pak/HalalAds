@@ -27,7 +27,7 @@ export async function GET(req: NextRequest) {
       headline: "Discover Halal Finance",
       description: "Shariah-compliant investment solutions",
       ctaText: "Learn More",
-      destinationUrl: "https://halalads.com",
+      destinationUrl: "https://islamicadnetwork.com",
       size,
     },
     tracking: {

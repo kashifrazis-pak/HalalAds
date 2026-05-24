@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/dashboard/", "/api/", "/auth/"],
       },
     ],
-    sitemap: "https://halalads.com/sitemap.xml",
+    sitemap: "https://islamicadnetwork.com/sitemap.xml",
   };
 }

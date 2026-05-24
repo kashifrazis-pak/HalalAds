@@ -52,7 +52,7 @@ function WaitlistForm() {
               Limited Early Access
             </div>
             <h1 className="font-display text-4xl lg:text-5xl font-bold text-brand-charcoal mb-5">
-              Join the HalalAds waitlist
+              Join the Islamic Ad Network waitlist
             </h1>
             <p className="text-brand-muted leading-relaxed mb-8">
               Be among the first to access the world&apos;s leading halal ad network.

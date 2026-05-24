@@ -5,7 +5,7 @@ import Footer from "@/components/layout/Footer";
 import { Heart, Globe2, ShieldCheck, TrendingUp, ArrowRight } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "About HalalAds",
+  title: "About Islamic Ad Network",
   description:
     "Our mission is to build the world's largest halal-certified advertising network — empowering Muslim businesses and publishers globally.",
 };
@@ -34,7 +34,7 @@ const values = [
 ];
 
 const milestones = [
-  { year: "2024", event: "HalalAds founded with a mission to serve the global Muslim economy" },
+  { year: "2024", event: "Islamic Ad Network founded with a mission to serve the global Muslim economy" },
   { year: "2025", event: "Beta platform launched — first advertisers and publishers onboarded" },
   { year: "2025", event: "Expanded to Southeast Asia and Western Muslim diaspora markets" },
   { year: "2026", event: "Arabic, Malay, and Urdu language support launched" },
@@ -58,7 +58,7 @@ export default function AboutPage() {
             </h1>
             <p className="text-white/75 text-xl leading-relaxed">
               We believe Muslim consumers deserve better than ads for alcohol, gambling,
-              and haram products. HalalAds was built to fix that — creating a space where
+              and haram products. Islamic Ad Network was built to fix that — creating a space where
               halal brands and halal audiences find each other.
             </p>
           </div>
@@ -84,7 +84,7 @@ export default function AboutPage() {
                   forcing publishers to either tolerate it or lose their revenue stream entirely.
                 </p>
                 <p className="text-brand-muted leading-relaxed">
-                  HalalAds changes that. We&apos;re building the infrastructure for a
+                  Islamic Ad Network changes that. We&apos;re building the infrastructure for a
                   Shariah-compliant digital advertising ecosystem — one that works for
                   advertisers, publishers, and the Muslim community alike.
                 </p>
@@ -165,7 +165,7 @@ export default function AboutPage() {
               Join the movement
             </h2>
             <p className="text-white/75 mb-8 max-w-lg mx-auto">
-              Whether you&apos;re a brand, a publisher, or a Muslim entrepreneur — there&apos;s a place for you on HalalAds.
+              Whether you&apos;re a brand, a publisher, or a Muslim entrepreneur — there&apos;s a place for you on Islamic Ad Network.
             </p>
             <div className="flex flex-wrap gap-4 justify-center">
               <Link href="/waitlist?type=advertiser" className="btn-secondary text-base px-8 py-4">

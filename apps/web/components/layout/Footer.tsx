@@ -30,10 +30,10 @@ const footerLinks = {
 };
 
 const socials = [
-  { label: "X / Twitter", href: "https://twitter.com/halalads", initial: "𝕏" },
-  { label: "LinkedIn", href: "https://linkedin.com/company/halalads", initial: "in" },
-  { label: "Instagram", href: "https://instagram.com/halalads", initial: "IG" },
-  { label: "YouTube", href: "https://youtube.com/@halalads", initial: "YT" },
+  { label: "X / Twitter", href: "https://twitter.com/islamicadnetwork", initial: "𝕏" },
+  { label: "LinkedIn", href: "https://linkedin.com/company/islamicadnetwork", initial: "in" },
+  { label: "Instagram", href: "https://instagram.com/islamicadnetwork", initial: "IG" },
+  { label: "YouTube", href: "https://youtube.com/@islamicadnetwork", initial: "YT" },
 ];
 
 export default function Footer() {
@@ -47,7 +47,7 @@ export default function Footer() {
               Ready to Reach the Muslim World?
             </p>
             <p className="text-white/70 mt-1 text-sm">
-              Join thousands of brands and publishers on HalalAds.
+              Join thousands of brands and publishers on Islamic Ad Network.
             </p>
           </div>
           <div className="flex gap-3">
@@ -76,7 +76,7 @@ export default function Footer() {
                 </svg>
               </div>
               <span className="font-display font-bold text-xl text-white">
-                Halal<span className="text-brand-gold">Ads</span>
+                Islamic<span className="text-brand-gold">AdNetwork</span>
               </span>
             </Link>
             <p className="text-white/60 text-sm leading-relaxed max-w-xs">
@@ -131,12 +131,12 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-10 mt-10 border-t border-white/10">
           <p className="text-white/40 text-xs">
-            © {new Date().getFullYear()} HalalAds. All rights reserved.
+            © {new Date().getFullYear()} Islamic Ad Network. All rights reserved.
           </p>
           <div className="flex items-center gap-2 text-white/40 text-xs">
             <Mail size={12} />
-            <a href="mailto:hello@halalads.com" className="hover:text-brand-gold transition-colors">
-              hello@halalads.com
+            <a href="mailto:hello@islamicadnetwork.com" className="hover:text-brand-gold transition-colors">
+              hello@islamicadnetwork.com
             </a>
           </div>
         </div>

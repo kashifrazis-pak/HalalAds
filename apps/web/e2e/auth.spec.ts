@@ -30,7 +30,7 @@ test.describe("Authentication", () => {
     await expect(page).toHaveURL(/\/auth\/signin/);
   });
 
-  test("TC-E-045: sign-in page title contains HalalAds", async ({ page }) => {
+  test("TC-E-045: sign-in page title contains Islamic Ad Network", async ({ page }) => {
     await page.goto("/auth/signin");
     await expect(page).toHaveTitle(/halalads/i);
   });

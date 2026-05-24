@@ -23,7 +23,7 @@ export default function BlogPage() {
         <section className="bg-gradient-hero pt-32 pb-20">
           <div className="container-brand text-center max-w-2xl mx-auto">
             <h1 className="font-display text-5xl font-bold text-white mb-4">
-              The HalalAds <span className="gradient-text">Blog</span>
+              The Islamic Ad Network <span className="gradient-text">Blog</span>
             </h1>
             <p className="text-white/75 text-lg">
               Insights on the Muslim market, halal advertising, and how to grow your brand across the Islamic world.
