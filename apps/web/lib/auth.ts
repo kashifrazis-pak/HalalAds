@@ -6,6 +6,7 @@ import { createServiceClient } from "@/lib/supabase";
 import type { UserRole } from "@/lib/database.types";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  secret: process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET,
   providers: [
     Google({
       clientId: process.env.AUTH_GOOGLE_ID,
