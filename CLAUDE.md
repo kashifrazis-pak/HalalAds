@@ -51,11 +51,11 @@ We serve Muslims across very different cultures — Indonesian, Pakistani, Arab,
 | Icons | lucide-react |
 | MDX Blog | next-mdx-remote + gray-matter |
 | UI utilities | clsx + tailwind-merge + class-variance-authority |
-| Auth | NextAuth.js v5 (planned Sprint 3) |
-| Database | Supabase — PostgreSQL + Storage + Realtime (planned Sprint 3) |
-| Payments | Stripe (planned Sprint 4) |
+| Auth | NextAuth.js v5 (live) |
+| Database | Supabase — PostgreSQL + Storage + Realtime (live) |
+| Payments | Stripe (live — prepaid credits) |
 | Cache | Upstash Redis (planned Sprint 5) |
-| Email | Resend (planned Sprint 5) |
+| Email | Resend (wired, magic link paused pending Supabase DB adapter) |
 | Analytics | PostHog (planned Sprint 6) |
 | Deployment | Vercel |
 
@@ -127,9 +127,13 @@ All commands run from `apps/web/`:
 npm run dev      # Start dev server → http://localhost:3000
 npm run build    # Production build (always verify this passes before finishing)
 npm run lint     # ESLint check
+npm test         # Jest unit + integration tests (149 tests across 21 suites)
+npm run test:coverage   # Test run with coverage report
+npm run test:e2e        # Playwright end-to-end tests
 ```
 
 **Always run `npm run build` before marking any sprint complete.** The build must pass with zero errors.
+**Always run `npm test` after adding new API routes or components.** All 149 tests must stay green.
 
 ---
 
@@ -169,19 +173,28 @@ npm run lint     # ESLint check
 - Email providers in NextAuth v5 require a DB adapter — Supabase adapter needed before re-enabling Resend
 - Google OAuth redirect URI: `https://islamicadnetwork.com/api/auth/callback/google`
 
-### 🔜 Sprint 4 — Campaign Engine
-- Campaign creation wizard (type → creative → targeting → budget → schedule)
-- Ad creative upload (Supabase Storage)
-- Stripe billing (prepaid credits)
-- Ad serving API: `/api/serve/[adunit]`
-- Impression pixel: `/api/track/impression`
-- Click redirect: `/api/track/click`
+### ✅ Sprint 4 — Campaign Engine (COMPLETE)
+- Campaign creation wizard live — multi-step UI (type → creative → targeting → budget → schedule)
+- `/api/campaigns` POST — creates campaign + ad_creative rows in Supabase
+- `/api/campaigns/[id]` PATCH — pause/activate campaign; restricted to "active"/"paused" only
+- `/dashboard/advertiser/campaigns/[id]` — detail page: stats, budget, targeting, creative preview, pause/activate button
+- Stripe prepaid credit top-ups — `/api/billing/checkout` (Stripe Checkout) + `/api/billing/webhook` (balance update)
+- `billing_transactions` table for full payment audit trail
+- Ad unit creation live — `/api/ad-units` POST, `/dashboard/publisher/ad-units/[id]` detail page with real embed snippet
+- Embed code uses real DB unit UUID (not random placeholder)
+- Stub API routes in place: `/api/serve/[adunit]`, `/api/track/impression`, `/api/track/click`
 
-### 🔜 Sprint 5 — Publisher Tools
-- Publisher site registration + halal content verification
-- Ad unit builder + JS snippet generator
+**Key bugs fixed in Sprint 4:**
+- NextAuth v5 JWT/session callbacks must NEVER call Supabase — they run in Edge runtime which lacks Node.js APIs
+- All dashboard DB lookups use `session.user.email` → `users.id` → `advertisers/publishers.id` (never `session.user.id` which is a non-UUID string)
+- Campaigns SELECT used non-existent `budget` column — corrected to `total_budget`
+- `revenue_share` is stored as decimal (0.700) not integer percentage — fixed all calculations and displays
+
+### 🔜 Sprint 5 — Publisher Tools (partially done)
+- ✅ Ad unit creation + detail page with embed code (done in Sprint 4)
+- Publisher site registration + halal content verification (pending)
 - Payout setup (bank transfer / PayPal / Wise)
-- Publisher earnings calculation
+- Publisher earnings payout flow
 
 ### 🔜 Sprint 6 — SEO, Performance & Polish
 - Metadata + OG tags for all pages
@@ -193,18 +206,27 @@ npm run lint     # ESLint check
 
 ---
 
-## Database Schema (Planned — Supabase PostgreSQL)
+## Database Schema (Live — Supabase PostgreSQL)
 
 ```sql
-users         (id, email, role: 'advertiser'|'publisher'|'admin', created_at)
-advertisers   (id, user_id, company_name, balance, billing_info)
-publishers    (id, user_id, site_url, verified, revenue_share)
-campaigns     (id, advertiser_id, type, status, budget, spend, targeting_json)
-ad_creatives  (id, campaign_id, type, url, dimensions)
-ad_units      (id, publisher_id, size, placement)
-impressions   (id, campaign_id, ad_unit_id, timestamp, ip_hash, country)
-clicks        (id, impression_id, timestamp, ip_hash)
+users                (id uuid PK default gen_random_uuid(), email unique, role, nextauth_sub, created_at)
+advertisers          (id uuid PK, user_id FK→users, company_name, balance bigint cents, created_at)
+publishers           (id uuid PK, user_id FK→users, display_name, site_name, site_url, verified bool, revenue_share numeric(4,3) DEFAULT 0.700)
+campaigns            (id uuid PK, advertiser_id FK, name, type CPC|CPM|CPA, status, daily_budget cents, total_budget cents, spend cents, bid_amount cents, targeting_json, start_date, end_date)
+ad_creatives         (id uuid PK, campaign_id FK, headline, description, destination_url, cta_text, image_url, size)
+ad_units             (id uuid PK, publisher_id FK, name, site_url, size, placement, active bool)
+impressions          (id uuid PK, campaign_id FK, ad_unit_id FK, creative_id FK, ip_hash, country, user_agent, timestamp)
+clicks               (id uuid PK, impression_id FK, campaign_id FK, ip_hash, timestamp)
+billing_transactions (id uuid PK, advertiser_id FK, type topup|spend, amount_cents, credits, description, stripe_payment_intent_id)
+verification_tokens  (identifier, token, expires — for NextAuth magic link)
+waitlist             (id uuid PK, name, email unique, type, company, source, created_at)
 ```
+
+**Schema notes:**
+- `users.id` is a standalone UUID (gen_random_uuid()) — NOT linked to Supabase auth.users. Migration 007 decoupled these.
+- `revenue_share` is a decimal fraction (0.700 = 70%), NOT an integer percentage. Multiply by 100 for display.
+- `campaigns` uses `daily_budget` and `total_budget` columns — there is NO `budget` column.
+- All IP storage uses SHA-256(ip + YYYYMMDD salt) — never raw IPs.
 
 ---
 
@@ -214,10 +236,22 @@ clicks        (id, impression_id, timestamp, ip_hash)
 - **"use client"** only on components that need browser APIs or React hooks — keep server components where possible for SEO
 - **Framer Motion** for all scroll-triggered animations — use `whileInView` with `viewport={{ once: true }}`
 - **No dark mode** — the brand uses a light cream background; dark mode is not in scope
-- **Forms are client-side only** in Sprint 1–2 (simulate submission). Real API endpoints come in Sprint 3+
 - **Images** — use `next/image` for all images. External images must be added to `next.config.mjs` domains
 - **Lucide icons** — some icon names changed in newer versions. If an import fails, check available exports before guessing
 - **MDX blog** — frontmatter fields: `title`, `description`, `date` (YYYY-MM-DD), `author`, `category`, `readTime`, `featured` (boolean)
+
+### Auth & Session Rules (CRITICAL)
+- **NEVER call Supabase inside `jwt` or `session` NextAuth callbacks** — they run in Edge runtime (no Node.js APIs)
+- Only the `signIn` callback (Node.js `/api/auth/*` route) is safe for DB calls
+- **User identity**: always use `session.user.email` to look up `users.id`, then join to `advertisers`/`publishers`
+- `session.user.id` = `token.sub` = NextAuth provider ID (NOT a UUID) — never use it as a DB UUID
+- `SUPABASE_SERVICE_ROLE_KEY` server-only; never in client components or Edge runtime
+
+### Test Suite
+- 149 tests across 21 suites: unit, integration, component — all must stay green
+- API route tests use `@jest-environment node` and mock `@/lib/auth`, `@/lib/supabase`, `@/lib/stripe`
+- Component tests use jsdom (default); mock `next/navigation`, `next-auth/react` via `jest.setup.ts`
+- Do NOT try to `delete window.location` or `Object.defineProperty(window, 'location', ...)` — non-configurable in jsdom
 
 ---
 
