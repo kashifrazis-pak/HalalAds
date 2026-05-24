@@ -68,7 +68,7 @@ export default function Navbar() {
           {/* Desktop CTAs */}
           <div className="hidden lg:flex items-center gap-3">
             <Link
-              href="/login"
+              href="/auth/signin"
               className={cn(
                 "text-sm font-medium transition-colors hover:text-brand-gold",
                 scrolled ? "text-brand-charcoal" : "text-white/90"
@@ -112,7 +112,7 @@ export default function Navbar() {
               </Link>
             ))}
             <div className="flex gap-3 pt-3 border-t border-brand-cream-dark mt-2">
-              <Link href="/login" className="btn-outline flex-1 text-sm py-2.5">
+              <Link href="/auth/signin" className="btn-outline flex-1 text-sm py-2.5">
                 Sign in
               </Link>
               <Link href="/waitlist" className="btn-secondary flex-1 text-sm py-2.5">
