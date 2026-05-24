@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
+import Providers from "./providers";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -70,7 +71,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         />
       </head>
-      <body className="antialiased">{children}</body>
+      <body className="antialiased"><Providers>{children}</Providers></body>
     </html>
   );
 }
