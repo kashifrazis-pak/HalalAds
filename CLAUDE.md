@@ -127,7 +127,7 @@ All commands run from `apps/web/`:
 npm run dev      # Start dev server → http://localhost:3000
 npm run build    # Production build (always verify this passes before finishing)
 npm run lint     # ESLint check
-npm test         # Jest unit + integration tests (190 tests across 27 suites)
+npm test         # Jest unit + integration tests (213 tests across 30 suites)
 npm run test:coverage   # Test run with coverage report
 npm run test:e2e        # Playwright end-to-end tests
 ```
@@ -259,10 +259,12 @@ waitlist             (id uuid PK, name, email unique, type, company, source, cre
 - `SUPABASE_SERVICE_ROLE_KEY` server-only; never in client components or Edge runtime
 
 ### Test Suite
-- 149 tests across 21 suites: unit, integration, component — all must stay green
+- **213 tests across 30 suites** — all must stay green
 - API route tests use `@jest-environment node` and mock `@/lib/auth`, `@/lib/supabase`, `@/lib/stripe`
 - Component tests use jsdom (default); mock `next/navigation`, `next-auth/react` via `jest.setup.ts`
 - Do NOT try to `delete window.location` or `Object.defineProperty(window, 'location', ...)` — non-configurable in jsdom
+- Supabase chain mocks: `eq()` must return the chain (not a Promise); add `then: (resolve) => Promise.resolve({error:null}).then(resolve)` to support `await db.from(...).update(...).eq(...)` patterns
+- `lib/paypal.ts` tests mock `global.fetch` — must be set BEFORE importing the module
 
 ---
 

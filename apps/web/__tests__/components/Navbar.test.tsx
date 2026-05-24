@@ -26,10 +26,13 @@ describe("Navbar", () => {
     expect(ctaLinks.length).toBeGreaterThanOrEqual(1);
   });
 
-  it("TC-C-013: renders Sign in link", () => {
+  it("TC-C-013: Sign in links point to /auth/signin (not /login)", () => {
     render(<Navbar />);
     const signInLinks = screen.getAllByRole("link", { name: /sign in/i });
     expect(signInLinks.length).toBeGreaterThanOrEqual(1);
+    signInLinks.forEach((link) => {
+      expect(link).toHaveAttribute("href", "/auth/signin");
+    });
   });
 
   it("TC-C-014: mobile menu toggle button is present", () => {
