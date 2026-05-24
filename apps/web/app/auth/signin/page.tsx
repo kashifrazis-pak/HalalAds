@@ -38,7 +38,7 @@ function SignInForm() {
             </svg>
           </div>
           <span className="font-display font-bold text-2xl text-brand-charcoal">
-            Halal<span className="text-brand-gold">Ads</span>
+            Islamic<span className="text-brand-gold">AdNetwork</span>
           </span>
         </Link>
 
