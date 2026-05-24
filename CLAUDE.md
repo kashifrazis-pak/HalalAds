@@ -151,12 +151,23 @@ npm run lint     # ESLint check
 - `/blog` — MDX blog: listing page + dynamic `[slug]` pages
 - 2 SEO blog posts: halal advertising guide + publisher monetisation guide
 
-### 🔜 Sprint 3 — Auth + Dashboard Shells
-- Supabase project setup (env vars: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`)
-- NextAuth.js v5 (email magic link + Google OAuth)
+### ✅ Sprint 3 — Auth + Dashboard Shells (COMPLETE)
+- Supabase schema: 9 tables, 20 RLS policies, auth trigger auto-creates user rows
+- NextAuth.js v5 — Google OAuth live (`AUTH_SECRET`, `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET` set on Vercel)
+- Magic link (Resend) wired but temporarily removed — requires Supabase DB adapter in NextAuth v5
+- `/auth/signin` — Google sign-in page (clean, branded)
+- `/auth/error` — error page with human-readable NextAuth error messages
+- `/onboarding` — new user role selection (Advertiser / Publisher), writes to Supabase
+- `/api/onboarding` — POST route that saves role + creates advertiser/publisher profile row
+- Middleware — protects `/dashboard/*`, redirects roleless users to `/onboarding`
 - `/dashboard/advertiser` — campaign list, stats overview, create campaign CTA
 - `/dashboard/publisher` — earnings overview, ad units list, get snippet CTA
-- Protected route middleware
+
+**Key auth decisions:**
+- NextAuth v5 uses `AUTH_SECRET` (not `NEXTAUTH_SECRET`) — both are set for compatibility
+- `NEXTAUTH_URL` on Vercel production must be `https://islamicadnetwork.com` — was previously `https://halalads.com` (pre-rebrand, caused domain squatter redirect)
+- Email providers in NextAuth v5 require a DB adapter — Supabase adapter needed before re-enabling Resend
+- Google OAuth redirect URI: `https://islamicadnetwork.com/api/auth/callback/google`
 
 ### 🔜 Sprint 4 — Campaign Engine
 - Campaign creation wizard (type → creative → targeting → budget → schedule)
