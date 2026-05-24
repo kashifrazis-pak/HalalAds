@@ -38,7 +38,7 @@ export default defineConfig({
           NEXT_PUBLIC_SUPABASE_URL: "https://placeholder.supabase.co",
           NEXT_PUBLIC_SUPABASE_ANON_KEY: "placeholder",
           SUPABASE_SERVICE_ROLE_KEY: "placeholder",
-          AUTH_SECRET: "halalads-test-secret-placeholder-32chars",
+          AUTH_SECRET: "islamicadnetwork-test-secret-32char",
           AUTH_URL: "http://localhost:3000",
           AUTH_TRUST_HOST: "true",
           STRIPE_SECRET_KEY: "sk_test_placeholder",

@@ -5,7 +5,7 @@
 import { test, expect } from "@playwright/test";
 
 const publicPages = [
-  { path: "/", title: /halalads/i },
+  { path: "/", title: /islamic ad network/i },
   { path: "/advertisers", title: /advertis/i },
   { path: "/publishers", title: /publish/i },
   { path: "/pricing", title: /pricing/i },

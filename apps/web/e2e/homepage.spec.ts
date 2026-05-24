@@ -33,7 +33,7 @@ test.describe("Homepage", () => {
   });
 
   test("TC-E-006: page title contains Islamic Ad Network", async ({ page }) => {
-    await expect(page).toHaveTitle(/halalads/i);
+    await expect(page).toHaveTitle(/islamic ad network/i);
   });
 
   test("TC-E-007: footer is visible", async ({ page }) => {

@@ -32,6 +32,6 @@ test.describe("Authentication", () => {
 
   test("TC-E-045: sign-in page title contains Islamic Ad Network", async ({ page }) => {
     await page.goto("/auth/signin");
-    await expect(page).toHaveTitle(/halalads/i);
+    await expect(page).toHaveTitle(/islamic ad network/i);
   });
 });

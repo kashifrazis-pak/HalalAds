@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  var BASE = "https://halalads.com";
+  var BASE = "https://islamicadnetwork.com";
 
   function init() {
     var units = document.querySelectorAll('[id="ha-ad-unit"]');

@@ -49,9 +49,9 @@ const structuredData = {
   logo: "https://islamicadnetwork.com/logo.png",
   description: "The world's leading halal advertising network.",
   sameAs: [
-    "https://twitter.com/halalads",
-    "https://linkedin.com/company/halalads",
-    "https://instagram.com/halalads",
+    "https://twitter.com/islamicadnetwork",
+    "https://linkedin.com/company/islamicadnetwork",
+    "https://instagram.com/islamicadnetwork",
   ],
   contactPoint: {
     "@type": "ContactPoint",
