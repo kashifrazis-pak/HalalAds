@@ -14,7 +14,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
     Resend({
       apiKey: process.env.RESEND_API_KEY,
-      from: "Islamic Ad Network <noreply@islamicadnetwork.com>",
+      from: "Islamic Ad Network <onboarding@resend.dev>",
     }),
   ],
   pages: {
