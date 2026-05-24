@@ -25,13 +25,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   session: { strategy: "jwt" },
   callbacks: {
     async jwt({ token, trigger }) {
-      const needsLookup =
-        trigger === "signIn" || trigger === "update" || !token.dbUserId;
-
+      const needsLookup = trigger === "signIn" || trigger === "update" || !token.dbUserId;
       if (needsLookup && token.email) {
         const db = createServiceClient() as any;
-
-        // Find existing user by email
         const { data: existing } = await db
           .from("users")
           .select("id, role, nextauth_sub")
@@ -39,14 +35,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           .single();
 
         if (existing) {
-          // Backfill nextauth_sub if missing
           if (!existing.nextauth_sub && token.sub) {
             await db.from("users").update({ nextauth_sub: token.sub }).eq("id", existing.id);
           }
           token.dbUserId = existing.id;
           token.role = existing.role ?? null;
         } else {
-          // Auto-create user row on first sign-in (NextAuth handles auth, not Supabase Auth)
           const { data: created } = await db
             .from("users")
             .insert({ email: token.email, nextauth_sub: token.sub ?? null, role: null })
@@ -63,9 +57,20 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
     async session({ session, token }) {
       if (session.user) {
-        // Use the real DB UUID as the user ID so all Supabase queries work
-        session.user.id = (token.dbUserId as string) ?? token.sub ?? "";
-        (session.user as any).role = token.role ?? null;
+        // If dbUserId isn't in the token (stale JWT), fall back to a DB lookup by email
+        if (!token.dbUserId && token.email) {
+          const db = createServiceClient() as any;
+          const { data } = await db
+            .from("users")
+            .select("id, role")
+            .eq("email", token.email)
+            .maybeSingle();
+          session.user.id = data?.id ?? "";
+          (session.user as any).role = data?.role ?? null;
+        } else {
+          session.user.id = (token.dbUserId as string) ?? "";
+          (session.user as any).role = (token.role as string) ?? null;
+        }
       }
       return session;
     },
