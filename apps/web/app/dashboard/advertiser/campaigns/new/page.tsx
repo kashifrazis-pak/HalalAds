@@ -82,8 +82,19 @@ export default function NewCampaignPage() {
 
   async function handleSubmit() {
     setSubmitting(true);
-    await new Promise((r) => setTimeout(r, 1500));
-    router.push("/dashboard/advertiser/campaigns?created=1");
+    try {
+      const res = await fetch("/api/campaigns", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Failed to create campaign");
+      router.push(`/dashboard/advertiser/campaigns/${data.id}?created=1`);
+    } catch (e) {
+      console.error(e);
+      setSubmitting(false);
+    }
   }
 
   return (

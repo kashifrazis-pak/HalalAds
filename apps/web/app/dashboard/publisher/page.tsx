@@ -52,7 +52,7 @@ export default async function PublisherOverviewPage() {
     .in("ad_unit_id", adUnitIds.length ? adUnitIds : ["00000000-0000-0000-0000-000000000000"]);
 
   // Earnings estimate: impressions × $2.50 RPM × publisher revenue share
-  const revenueShare = (publisher.revenue_share ?? 70) / 100;
+  const revenueShare = publisher.revenue_share ?? 0.70;
   const RPM_CENTS = 250; // $2.50 default RPM in cents
   const estimatedEarningsCents = Math.floor(((totalImpressions ?? 0) / 1000) * RPM_CENTS * revenueShare);
 
@@ -83,7 +83,7 @@ export default async function PublisherOverviewPage() {
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
         <StatCard label="Total Impressions" value={fmt(totalImpressions ?? 0)} icon={Eye} />
         <StatCard label="Est. Earnings" value={fmtUsd(estimatedEarningsCents)} icon={DollarSign} iconColor="gold" />
-        <StatCard label="Revenue Share" value={`${publisher.revenue_share ?? 70}%`} icon={BarChart2} />
+        <StatCard label="Revenue Share" value={`${Math.round((publisher.revenue_share ?? 0.70) * 100)}%`} icon={BarChart2} />
         <StatCard label="Ad Units" value={String((adUnits as any[]).length)} icon={Globe} />
       </div>
 

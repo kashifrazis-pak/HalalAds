@@ -41,7 +41,7 @@ export default async function CampaignsPage() {
 
   const { data: campaigns = [] } = await db
     .from("campaigns")
-    .select("id, name, status, type, budget, spend, created_at")
+    .select("id, name, status, type, total_budget, spend, created_at")
     .eq("advertiser_id", advertiser.id)
     .order("created_at", { ascending: false });
 
@@ -86,7 +86,7 @@ export default async function CampaignsPage() {
                       </span>
                     </td>
                     <td className="px-5 py-4 text-brand-muted text-sm font-mono uppercase">{c.type}</td>
-                    <td className="px-5 py-4 text-brand-muted text-sm">{fmtUsd(c.budget ?? 0)}</td>
+                    <td className="px-5 py-4 text-brand-muted text-sm">{fmtUsd(c.total_budget ?? 0)}</td>
                     <td className="px-5 py-4 text-brand-charcoal font-semibold text-sm">{fmtUsd(c.spend ?? 0)}</td>
                     <td className="px-5 py-4 text-brand-muted text-xs">{fmtDate(c.created_at)}</td>
                     <td className="px-5 py-4">

@@ -20,13 +20,13 @@ export default function NewAdUnitPage() {
   const [size, setSize] = useState("300x250");
   const [loading, setLoading] = useState(false);
   const [created, setCreated] = useState(false);
+  const [createdId, setCreatedId] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
-  const pubId = "PUB_" + Math.random().toString(36).substring(2, 10).toUpperCase();
-  const snippet = `<!-- Islamic Ad Network Ad Unit: ${name || "My Ad Unit"} -->
+  const snippet = `<!-- Islamic Ad Network: ${name || "My Ad Unit"} -->
 <div
   id="ha-ad-unit"
-  data-pub="${pubId}"
+  data-unit="${createdId ?? "UNIT_ID"}"
   data-size="${size}"
 ></div>
 <script src="//cdn.islamicadnetwork.com/a.js" async></script>`;
@@ -34,9 +34,21 @@ export default function NewAdUnitPage() {
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 1200));
-    setCreated(true);
-    setLoading(false);
+    try {
+      const res = await fetch("/api/ad-units", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, siteUrl: site, size }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Failed to create ad unit");
+      setCreatedId(data.id);
+      setCreated(true);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
   }
 
   function copySnippet() {
@@ -78,9 +90,11 @@ export default function NewAdUnitPage() {
             <Link href="/dashboard/publisher/ad-units" className="btn-outline flex-1 text-sm text-center">
               View all ad units
             </Link>
-            <Link href="/dashboard/publisher" className="btn-primary flex-1 text-sm text-center">
-              Go to dashboard
-            </Link>
+            {createdId && (
+              <Link href={`/dashboard/publisher/ad-units/${createdId}`} className="btn-primary flex-1 text-sm text-center">
+                View ad unit
+              </Link>
+            )}
           </div>
         </div>
       ) : (

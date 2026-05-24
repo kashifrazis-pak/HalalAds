@@ -46,7 +46,7 @@ export default async function AdUnitsPage() {
     }
   }
 
-  const revenueShare = (publisher.revenue_share ?? 70) / 100;
+  const revenueShare = publisher.revenue_share ?? 0.70;
   const RPM_CENTS = 250;
 
   function unitEarnings(unitId: string) {

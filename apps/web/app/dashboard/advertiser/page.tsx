@@ -52,7 +52,7 @@ export default async function AdvertiserOverviewPage() {
   // Campaigns
   const { data: campaigns = [] } = await db
     .from("campaigns")
-    .select("id, name, status, type, budget, spend")
+    .select("id, name, status, type, total_budget, spend")
     .eq("advertiser_id", advertiser.id)
     .order("created_at", { ascending: false })
     .limit(5);
@@ -146,7 +146,7 @@ export default async function AdvertiserOverviewPage() {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-brand-muted text-sm font-mono uppercase">{c.type}</td>
-                    <td className="px-6 py-4 text-brand-muted text-sm">{fmtUsd(c.budget ?? 0)}</td>
+                    <td className="px-6 py-4 text-brand-muted text-sm">{fmtUsd(c.total_budget ?? 0)}</td>
                     <td className="px-6 py-4 font-semibold text-brand-charcoal text-sm">{fmtUsd(c.spend ?? 0)}</td>
                     <td className="px-6 py-4">
                       <Link href={`/dashboard/advertiser/campaigns/${c.id}`} className="text-brand-green text-xs font-semibold hover:underline">
