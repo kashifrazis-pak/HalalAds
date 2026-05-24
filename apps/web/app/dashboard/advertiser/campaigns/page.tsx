@@ -1,22 +1,48 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
 import Link from "next/link";
+import { createServiceClient } from "@/lib/supabase";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
-import { Search, Filter } from "lucide-react";
-
-const campaigns = [
-  { id: "1", name: "Ramadan 2025 — Halal Foods", status: "active", type: "CPC", budget: "$500", spend: "$142.50", impressions: "48,200", clicks: "1,240", ctr: "2.57%", created: "Jan 15, 2025" },
-  { id: "2", name: "Modest Fashion Spring Launch", status: "active", type: "CPM", budget: "$300", spend: "$88.00", impressions: "58,700", clicks: "820", ctr: "1.40%", created: "Feb 1, 2025" },
-  { id: "3", name: "Islamic Finance App Install", status: "paused", type: "CPA", budget: "$1,000", spend: "$310.00", impressions: "92,100", clicks: "3,100", ctr: "3.36%", created: "Jan 28, 2025" },
-  { id: "4", name: "Halal Travel — Umrah Packages", status: "review", type: "CPC", budget: "$200", spend: "$0", impressions: "—", clicks: "—", ctr: "—", created: "Mar 2, 2025" },
-];
+import { Megaphone, Plus } from "lucide-react";
 
 const statusStyles: Record<string, string> = {
   active: "bg-brand-green/10 text-brand-green",
   paused: "bg-yellow-50 text-yellow-700",
-  review: "bg-blue-50 text-blue-700",
-  ended: "bg-gray-100 text-gray-500",
+  pending_review: "bg-blue-50 text-blue-700",
+  draft: "bg-gray-100 text-gray-500",
+  completed: "bg-gray-100 text-gray-500",
+  rejected: "bg-red-50 text-red-600",
 };
 
-export default function CampaignsPage() {
+function fmtUsd(cents: number) {
+  return `$${(cents / 100).toFixed(2)}`;
+}
+
+function fmtDate(iso: string) {
+  return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+}
+
+export default async function CampaignsPage() {
+  const session = await auth();
+  if (!session?.user?.id) redirect("/auth/signin");
+
+  const db = createServiceClient() as any;
+
+  const { data: advertiser } = await db
+    .from("advertisers")
+    .select("id")
+    .eq("user_id", session.user.id)
+    .single();
+
+  if (!advertiser) redirect("/onboarding");
+
+  const { data: campaigns = [] } = await db
+    .from("campaigns")
+    .select("id, name, status, type, budget, spend, created_at")
+    .eq("advertiser_id", advertiser.id)
+    .order("created_at", { ascending: false });
+
   return (
     <>
       <DashboardHeader
@@ -26,55 +52,52 @@ export default function CampaignsPage() {
         ctaHref="/dashboard/advertiser/campaigns/new"
       />
 
-      {/* Filters */}
-      <div className="flex items-center gap-3 mb-6">
-        <div className="flex-1 relative">
-          <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-brand-muted" />
-          <input
-            type="text"
-            placeholder="Search campaigns…"
-            className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-brand-cream-dark bg-white text-sm text-brand-charcoal placeholder:text-brand-muted focus:outline-none focus:ring-2 focus:ring-brand-green/20 focus:border-brand-green"
-          />
-        </div>
-        <button className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-brand-cream-dark bg-white text-sm font-medium text-brand-muted hover:text-brand-charcoal transition-colors">
-          <Filter size={14} /> Filter
-        </button>
-      </div>
-
       <div className="bg-white rounded-2xl border border-brand-cream-dark overflow-hidden shadow-brand-sm">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="bg-brand-cream text-left">
-                {["Campaign", "Status", "Type", "Budget", "Spend", "Impressions", "Clicks", "CTR", "Created", ""].map((h) => (
-                  <th key={h} className="px-5 py-3 text-xs font-semibold text-brand-muted uppercase tracking-wide whitespace-nowrap">{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-brand-cream-dark">
-              {campaigns.map((c) => (
-                <tr key={c.id} className="hover:bg-brand-cream/40 transition-colors">
-                  <td className="px-5 py-4 font-medium text-brand-charcoal text-sm max-w-[200px] truncate">{c.name}</td>
-                  <td className="px-5 py-4">
-                    <span className={`px-2.5 py-1 rounded-full text-xs font-semibold capitalize ${statusStyles[c.status]}`}>{c.status}</span>
-                  </td>
-                  <td className="px-5 py-4 text-brand-muted text-sm font-mono">{c.type}</td>
-                  <td className="px-5 py-4 text-brand-muted text-sm">{c.budget}</td>
-                  <td className="px-5 py-4 text-brand-charcoal font-semibold text-sm">{c.spend}</td>
-                  <td className="px-5 py-4 text-brand-muted text-sm">{c.impressions}</td>
-                  <td className="px-5 py-4 text-brand-muted text-sm">{c.clicks}</td>
-                  <td className="px-5 py-4 text-brand-green font-semibold text-sm">{c.ctr}</td>
-                  <td className="px-5 py-4 text-brand-muted text-xs">{c.created}</td>
-                  <td className="px-5 py-4">
-                    <Link href={`/dashboard/advertiser/campaigns/${c.id}`} className="text-brand-green text-xs font-semibold hover:underline whitespace-nowrap">
-                      Manage →
-                    </Link>
-                  </td>
+        {(campaigns as any[]).length === 0 ? (
+          <div className="py-20 text-center">
+            <Megaphone size={36} className="text-brand-muted mx-auto mb-4" />
+            <p className="text-brand-charcoal font-display font-bold text-lg mb-1">No campaigns yet</p>
+            <p className="text-brand-muted text-sm mb-6">Create your first campaign to start reaching Muslim audiences.</p>
+            <Link href="/dashboard/advertiser/campaigns/new" className="btn-primary inline-flex items-center gap-2">
+              <Plus size={16} /> Create Campaign
+            </Link>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="bg-brand-cream text-left">
+                  {["Campaign", "Status", "Type", "Budget", "Spend", "Created", ""].map((h) => (
+                    <th key={h} className="px-5 py-3 text-xs font-semibold text-brand-muted uppercase tracking-wide whitespace-nowrap">{h}</th>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="divide-y divide-brand-cream-dark">
+                {(campaigns as any[]).map((c) => (
+                  <tr key={c.id} className="hover:bg-brand-cream/40 transition-colors">
+                    <td className="px-5 py-4 font-medium text-brand-charcoal text-sm max-w-[220px] truncate">
+                      {c.name || `Campaign #${c.id.slice(0, 8)}`}
+                    </td>
+                    <td className="px-5 py-4">
+                      <span className={`px-2.5 py-1 rounded-full text-xs font-semibold capitalize ${statusStyles[c.status] ?? "bg-gray-100 text-gray-500"}`}>
+                        {c.status.replace("_", " ")}
+                      </span>
+                    </td>
+                    <td className="px-5 py-4 text-brand-muted text-sm font-mono uppercase">{c.type}</td>
+                    <td className="px-5 py-4 text-brand-muted text-sm">{fmtUsd(c.budget ?? 0)}</td>
+                    <td className="px-5 py-4 text-brand-charcoal font-semibold text-sm">{fmtUsd(c.spend ?? 0)}</td>
+                    <td className="px-5 py-4 text-brand-muted text-xs">{fmtDate(c.created_at)}</td>
+                    <td className="px-5 py-4">
+                      <Link href={`/dashboard/advertiser/campaigns/${c.id}`} className="text-brand-green text-xs font-semibold hover:underline whitespace-nowrap">
+                        Manage →
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </>
   );
