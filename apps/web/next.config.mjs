@@ -1,6 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: "standalone",
+  redirects: async () => [
+    { source: "/login", destination: "/auth/signin", permanent: true },
+    { source: "/signin", destination: "/auth/signin", permanent: true },
+    { source: "/sign-in", destination: "/auth/signin", permanent: true },
+    { source: "/logout", destination: "/api/auth/signout", permanent: false },
+  ],
   headers: async () => [
     {
       source: "/api/serve/:path*",
