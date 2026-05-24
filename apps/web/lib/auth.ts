@@ -25,21 +25,46 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   session: { strategy: "jwt" },
   callbacks: {
     async jwt({ token, trigger }) {
-      // Look up role on sign-in or when session is explicitly updated (e.g. after onboarding)
-      if (token.sub && (trigger === "signIn" || trigger === "update" || !token.role)) {
+      const needsLookup =
+        trigger === "signIn" || trigger === "update" || !token.dbUserId;
+
+      if (needsLookup && token.email) {
         const db = createServiceClient() as any;
-        const { data } = await db
+
+        // Find existing user by email
+        const { data: existing } = await db
           .from("users")
-          .select("role")
-          .eq("id", token.sub)
+          .select("id, role, nextauth_sub")
+          .eq("email", token.email)
           .single();
-        token.role = data?.role ?? null;
+
+        if (existing) {
+          // Backfill nextauth_sub if missing
+          if (!existing.nextauth_sub && token.sub) {
+            await db.from("users").update({ nextauth_sub: token.sub }).eq("id", existing.id);
+          }
+          token.dbUserId = existing.id;
+          token.role = existing.role ?? null;
+        } else {
+          // Auto-create user row on first sign-in (NextAuth handles auth, not Supabase Auth)
+          const { data: created } = await db
+            .from("users")
+            .insert({ email: token.email, nextauth_sub: token.sub ?? null, role: null })
+            .select("id, role")
+            .single();
+          if (created) {
+            token.dbUserId = created.id;
+            token.role = null;
+          }
+        }
       }
       return token;
     },
+
     async session({ session, token }) {
       if (session.user) {
-        session.user.id = token.sub ?? "";
+        // Use the real DB UUID as the user ID so all Supabase queries work
+        session.user.id = (token.dbUserId as string) ?? token.sub ?? "";
         (session.user as any).role = token.role ?? null;
       }
       return session;
