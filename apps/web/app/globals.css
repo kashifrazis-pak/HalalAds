@@ -1,0 +1,95 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #F9F7F2;
+  --foreground: #1A1A2E;
+  --brand-green: #0A5C36;
+  --brand-green-light: #0F7A49;
+  --brand-green-dark: #073D24;
+  --brand-gold: #C9A84C;
+  --brand-gold-light: #E2C47A;
+  --brand-cream: #F9F7F2;
+  --brand-charcoal: #1A1A2E;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: "Inter", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4 {
+  font-family: "Playfair Display", Georgia, serif;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .gradient-text {
+    background: linear-gradient(135deg, #C9A84C 0%, #E2C47A 50%, #C9A84C 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .gradient-text-green {
+    background: linear-gradient(135deg, #0A5C36 0%, #0F7A49 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .section-padding {
+    @apply px-4 sm:px-6 lg:px-8;
+  }
+}
+
+@layer components {
+  .container-brand {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full font-semibold text-white bg-brand-green hover:bg-brand-green-light transition-all duration-200 shadow-brand-sm hover:shadow-brand-md hover:-translate-y-0.5;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full font-semibold text-brand-charcoal bg-brand-gold hover:bg-brand-gold-light transition-all duration-200 shadow-gold-sm hover:shadow-gold-md hover:-translate-y-0.5;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full font-semibold text-brand-green border-2 border-brand-green hover:bg-brand-green hover:text-white transition-all duration-200;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full font-semibold text-white border-2 border-white/30 hover:border-white/60 hover:bg-white/10 transition-all duration-200;
+  }
+
+  .card-brand {
+    @apply bg-white rounded-2xl border border-brand-cream-dark shadow-brand-sm hover:shadow-brand-md transition-all duration-300 hover:-translate-y-1;
+  }
+
+  .badge-green {
+    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-brand-green/10 text-brand-green border border-brand-green/20;
+  }
+
+  .badge-gold {
+    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-brand-gold/10 text-brand-gold-dark border border-brand-gold/20;
+  }
+}
