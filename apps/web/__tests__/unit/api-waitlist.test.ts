@@ -8,6 +8,14 @@
 import { NextRequest } from "next/server";
 import { POST } from "@/app/api/waitlist/route";
 
+jest.mock("@/lib/supabase", () => ({
+  createServiceClient: () => ({
+    from: () => ({
+      insert: () => Promise.resolve({ error: null }),
+    }),
+  }),
+}));
+
 function makeRequest(body: object) {
   return new NextRequest("http://localhost/api/waitlist", {
     method: "POST",
