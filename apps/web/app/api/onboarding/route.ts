@@ -6,7 +6,7 @@ import type { UserRole } from "@/lib/database.types";
 
 export async function POST(req: NextRequest) {
   const session = await auth();
-  if (!session?.user?.id) {
+  if (!session?.user?.email) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -17,26 +17,38 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid role" }, { status: 400 });
   }
 
-  const userId = session.user.id;
-  const db = createServiceClient();
+  const db = createServiceClient() as any;
 
-  const { error: userError } = await (db as any)
+  // Look up user by email (the stable identifier across all auth providers)
+  const { data: userRow, error: lookupError } = await db
     .from("users")
-    .update({ role: role as UserRole })
-    .eq("id", userId);
+    .select("id")
+    .eq("email", session.user.email)
+    .single();
 
-  if (userError) {
-    return NextResponse.json({ error: "Failed to save role" }, { status: 500 });
+  if (lookupError || !userRow) {
+    // Auto-create user row if signIn callback didn't run yet
+    const { data: created, error: createError } = await db
+      .from("users")
+      .insert({ email: session.user.email, nextauth_sub: session.user.id ?? null })
+      .select("id")
+      .single();
+
+    if (createError || !created) {
+      return NextResponse.json({ error: "Failed to save role" }, { status: 500 });
+    }
+
+    userRow.id = created.id;
   }
 
+  const userId = userRow.id;
+
+  await db.from("users").update({ role: role as UserRole }).eq("id", userId);
+
   if (role === "advertiser") {
-    await (db as any)
-      .from("advertisers")
-      .upsert({ user_id: userId, balance: 0 }, { onConflict: "user_id" });
+    await db.from("advertisers").upsert({ user_id: userId, balance: 0 }, { onConflict: "user_id" });
   } else {
-    await (db as any)
-      .from("publishers")
-      .upsert({ user_id: userId, revenue_share: 70, verified: false }, { onConflict: "user_id" });
+    await db.from("publishers").upsert({ user_id: userId, revenue_share: 70, verified: false }, { onConflict: "user_id" });
   }
 
   return NextResponse.json({ success: true });

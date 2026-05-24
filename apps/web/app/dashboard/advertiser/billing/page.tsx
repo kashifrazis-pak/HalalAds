@@ -17,14 +17,16 @@ function fmtDate(iso: string) {
 
 export default async function BillingPage({ searchParams }: { searchParams: { success?: string } }) {
   const session = await auth();
-  if (!session?.user?.id) redirect("/auth/signin");
+  if (!session?.user?.email) redirect("/auth/signin");
 
   const db = createServiceClient() as any;
+
+  const { data: userRow } = await db.from("users").select("id").eq("email", session.user.email).maybeSingle();
 
   const { data: advertiser } = await db
     .from("advertisers")
     .select("id, balance")
-    .eq("user_id", session.user.id)
+    .eq("user_id", userRow?.id ?? "")
     .single();
 
   if (!advertiser) redirect("/onboarding");

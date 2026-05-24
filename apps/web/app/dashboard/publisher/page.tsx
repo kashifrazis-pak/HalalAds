@@ -21,15 +21,17 @@ function fmtUsd(cents: number) {
 
 export default async function PublisherOverviewPage() {
   const session = await auth();
-  if (!session?.user?.id) redirect("/auth/signin");
+  if (!session?.user?.email) redirect("/auth/signin");
 
   const db = createServiceClient() as any;
+
+  const { data: userRow } = await db.from("users").select("id").eq("email", session.user.email).maybeSingle();
 
   // Publisher profile
   const { data: publisher } = await db
     .from("publishers")
     .select("id, site_url, site_name, verified, revenue_share")
-    .eq("user_id", session.user.id)
+    .eq("user_id", userRow?.id ?? "")
     .single();
 
   if (!publisher) redirect("/onboarding");

@@ -24,53 +24,33 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   },
   session: { strategy: "jwt" },
   callbacks: {
-    async jwt({ token, trigger }) {
-      const needsLookup = trigger === "signIn" || trigger === "update" || !token.dbUserId;
-      if (needsLookup && token.email) {
-        const db = createServiceClient() as any;
-        const { data: existing } = await db
-          .from("users")
-          .select("id, role, nextauth_sub")
-          .eq("email", token.email)
-          .single();
-
-        if (existing) {
-          if (!existing.nextauth_sub && token.sub) {
-            await db.from("users").update({ nextauth_sub: token.sub }).eq("id", existing.id);
-          }
-          token.dbUserId = existing.id;
-          token.role = existing.role ?? null;
-        } else {
-          const { data: created } = await db
+    // Runs in Node.js API route context (/api/auth/*) — safe to call Supabase here
+    async signIn({ user }) {
+      if (user.email) {
+        try {
+          const db = createServiceClient() as any;
+          await db
             .from("users")
-            .insert({ email: token.email, nextauth_sub: token.sub ?? null, role: null })
-            .select("id, role")
-            .single();
-          if (created) {
-            token.dbUserId = created.id;
-            token.role = null;
-          }
+            .upsert(
+              { email: user.email, nextauth_sub: user.id ?? null },
+              { onConflict: "email", ignoreDuplicates: true }
+            );
+        } catch {
+          // Non-fatal — user can still sign in; row will be created on next attempt
         }
       }
+      return true;
+    },
+
+    // Keep JWT callback simple — no Supabase calls (runs in Edge runtime via middleware)
+    async jwt({ token }) {
       return token;
     },
 
+    // Keep session callback simple — no Supabase calls (runs in Edge runtime via middleware)
     async session({ session, token }) {
       if (session.user) {
-        // If dbUserId isn't in the token (stale JWT), fall back to a DB lookup by email
-        if (!token.dbUserId && token.email) {
-          const db = createServiceClient() as any;
-          const { data } = await db
-            .from("users")
-            .select("id, role")
-            .eq("email", token.email)
-            .maybeSingle();
-          session.user.id = data?.id ?? "";
-          (session.user as any).role = data?.role ?? null;
-        } else {
-          session.user.id = (token.dbUserId as string) ?? "";
-          (session.user as any).role = (token.role as string) ?? null;
-        }
+        session.user.id = token.sub ?? "";
       }
       return session;
     },

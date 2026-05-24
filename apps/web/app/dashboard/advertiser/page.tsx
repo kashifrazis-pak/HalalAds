@@ -33,15 +33,18 @@ function fmtUsd(cents: number) {
 
 export default async function AdvertiserOverviewPage() {
   const session = await auth();
-  if (!session?.user?.id) redirect("/auth/signin");
+  if (!session?.user?.email) redirect("/auth/signin");
 
   const db = createServiceClient() as any;
+
+  // Resolve DB user ID from email (stable across all auth providers)
+  const { data: userRow } = await db.from("users").select("id").eq("email", session.user.email).maybeSingle();
 
   // Advertiser profile
   const { data: advertiser } = await db
     .from("advertisers")
     .select("id, balance")
-    .eq("user_id", session.user.id)
+    .eq("user_id", userRow?.id ?? "")
     .single();
 
   if (!advertiser) redirect("/onboarding");
@@ -55,23 +58,18 @@ export default async function AdvertiserOverviewPage() {
     .limit(5);
 
   // Aggregate stats from campaigns
+  const campaignIds = (campaigns as any[]).map((c: any) => c.id);
   const totalSpend = (campaigns as any[]).reduce((s: number, c: any) => s + (c.spend ?? 0), 0);
   const activeCampaigns = (campaigns as any[]).filter((c: any) => c.status === "active").length;
 
   // Impression / click counts (will be 0 until ad serving is live)
-  const { count: totalImpressions = 0 } = await db
-    .from("impressions")
-    .select("id", { count: "exact", head: true })
-    .in("campaign_id", (campaigns as any[]).map((c: any) => c.id));
+  const { count: totalImpressions = 0 } = campaignIds.length
+    ? await db.from("impressions").select("id", { count: "exact", head: true }).in("campaign_id", campaignIds)
+    : { count: 0 };
 
-  const { count: totalClicks = 0 } = await db
-    .from("clicks")
-    .select("id", { count: "exact", head: true })
-    .in(
-      "impression_id",
-      // sub-select not supported via client — pass empty array if no campaigns
-      (campaigns as any[]).length ? undefined : []
-    );
+  const { count: totalClicks = 0 } = campaignIds.length
+    ? await db.from("clicks").select("id", { count: "exact", head: true }).in("campaign_id", campaignIds)
+    : { count: 0 };
 
   const ctr =
     totalImpressions && totalClicks

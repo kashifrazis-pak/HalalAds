@@ -12,15 +12,17 @@ function fmtDate(iso: string) {
 
 export default async function AdUnitsPage() {
   const session = await auth();
-  if (!session?.user?.id) redirect("/auth/signin");
+  if (!session?.user?.email) redirect("/auth/signin");
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const db = createServiceClient() as any;
 
+  const { data: userRow } = await db.from("users").select("id").eq("email", session.user.email).maybeSingle();
+
   const { data: publisher } = await db
     .from("publishers")
     .select("id, site_url, revenue_share")
-    .eq("user_id", session.user.id)
+    .eq("user_id", userRow?.id ?? "")
     .single();
 
   if (!publisher) redirect("/onboarding");
