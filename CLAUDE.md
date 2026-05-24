@@ -127,7 +127,7 @@ All commands run from `apps/web/`:
 npm run dev      # Start dev server → http://localhost:3000
 npm run build    # Production build (always verify this passes before finishing)
 npm run lint     # ESLint check
-npm test         # Jest unit + integration tests (149 tests across 21 suites)
+npm test         # Jest unit + integration tests (167 tests across 23 suites)
 npm run test:coverage   # Test run with coverage report
 npm run test:e2e        # Playwright end-to-end tests
 ```
@@ -190,11 +190,16 @@ npm run test:e2e        # Playwright end-to-end tests
 - Campaigns SELECT used non-existent `budget` column — corrected to `total_budget`
 - `revenue_share` is stored as decimal (0.700) not integer percentage — fixed all calculations and displays
 
-### 🔜 Sprint 5 — Publisher Tools (partially done)
+### ✅ Sprint 5 — Publisher Tools (partially complete)
 - ✅ Ad unit creation + detail page with embed code (done in Sprint 4)
+- ✅ Publisher payout setup — `/api/publisher/payout` GET + POST, `publisher_payout_methods` table, `PayoutSetupForm` client component in earnings page. Supports PayPal, Wise, Bank Transfer. Upserts on conflict so publishers can update their payout method at any time.
 - Publisher site registration + halal content verification (pending)
-- Payout setup (bank transfer / PayPal / Wise)
-- Publisher earnings payout flow
+
+**Key payout decisions:**
+- `publisher_payout_methods` has a UNIQUE constraint on `publisher_id` — one active payout method per publisher, upserted on save
+- `method` is validated server-side: must be `paypal`, `wise`, or `bank`
+- Email required for paypal/wise; account_holder + account_number required for bank
+- Earnings page (`/dashboard/publisher/earnings`) loads existing payout config on mount, pre-fills the form
 
 ### 🔜 Sprint 6 — SEO, Performance & Polish
 - Metadata + OG tags for all pages
@@ -217,7 +222,8 @@ ad_creatives         (id uuid PK, campaign_id FK, headline, description, destina
 ad_units             (id uuid PK, publisher_id FK, name, site_url, size, placement, active bool)
 impressions          (id uuid PK, campaign_id FK, ad_unit_id FK, creative_id FK, ip_hash, country, user_agent, timestamp)
 clicks               (id uuid PK, impression_id FK, campaign_id FK, ip_hash, timestamp)
-billing_transactions (id uuid PK, advertiser_id FK, type topup|spend, amount_cents, credits, description, stripe_payment_intent_id)
+billing_transactions      (id uuid PK, advertiser_id FK, type topup|spend, amount_cents, credits, description, stripe_payment_intent_id)
+publisher_payout_methods  (id uuid PK, publisher_id FK UNIQUE, method paypal|wise|bank, email, account_holder, account_number, swift_bic, updated_at)
 verification_tokens  (identifier, token, expires — for NextAuth magic link)
 waitlist             (id uuid PK, name, email unique, type, company, source, created_at)
 ```
