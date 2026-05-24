@@ -127,7 +127,7 @@ All commands run from `apps/web/`:
 npm run dev      # Start dev server → http://localhost:3000
 npm run build    # Production build (always verify this passes before finishing)
 npm run lint     # ESLint check
-npm test         # Jest unit + integration tests (167 tests across 23 suites)
+npm test         # Jest unit + integration tests (190 tests across 27 suites)
 npm run test:coverage   # Test run with coverage report
 npm run test:e2e        # Playwright end-to-end tests
 ```
@@ -192,14 +192,18 @@ npm run test:e2e        # Playwright end-to-end tests
 
 ### ✅ Sprint 5 — Publisher Tools (partially complete)
 - ✅ Ad unit creation + detail page with embed code (done in Sprint 4)
-- ✅ Publisher payout setup — `/api/publisher/payout` GET + POST, `publisher_payout_methods` table, `PayoutSetupForm` client component in earnings page. Supports PayPal, Wise, Bank Transfer. Upserts on conflict so publishers can update their payout method at any time.
+- ✅ Publisher payout setup — `/api/publisher/payout` GET + POST, `publisher_payout_methods` table, `PayoutSetupForm` client component. Supports PayPal, Wise, Bank Transfer.
+- ✅ PayPal payout integration — `lib/paypal.ts` (OAuth token + Payouts API), `POST /api/admin/payouts/process` (admin triggers payout), `POST /api/billing/paypal-webhook` (updates status to paid/failed/unclaimed), `GET /api/publisher/payouts` (payout history), `PayoutHistory` component (real DB data replaces fake static list)
 - Publisher site registration + halal content verification (pending)
 
 **Key payout decisions:**
-- `publisher_payout_methods` has a UNIQUE constraint on `publisher_id` — one active payout method per publisher, upserted on save
-- `method` is validated server-side: must be `paypal`, `wise`, or `bank`
-- Email required for paypal/wise; account_holder + account_number required for bank
-- Earnings page (`/dashboard/publisher/earnings`) loads existing payout config on mount, pre-fills the form
+- `publisher_payout_methods` UNIQUE on `publisher_id` — one payout method per publisher, upserted on save
+- `publisher_payouts` tracks each payout with status: pending → processing → paid | failed
+- Admin triggers payouts via `POST /api/admin/payouts/process` with `x-admin-secret` header
+- Minimum payout: 2500 cents ($25) enforced server-side
+- PayPal webhook handles: SUCCEEDED (→ paid), FAILED/RETURNED (→ failed), UNCLAIMED (→ failure_reason note, stays processing)
+- `PAYPAL_CLIENT_ID`, `PAYPAL_CLIENT_SECRET`, `PAYPAL_MODE` (sandbox|live), `PAYPAL_WEBHOOK_ID`, `ADMIN_SECRET` env vars required
+- Dashboard sidebar brand name fixed: "HalalAds" → "IslamicAdNetwork"
 
 ### 🔜 Sprint 6 — SEO, Performance & Polish
 - Metadata + OG tags for all pages
@@ -224,6 +228,7 @@ impressions          (id uuid PK, campaign_id FK, ad_unit_id FK, creative_id FK,
 clicks               (id uuid PK, impression_id FK, campaign_id FK, ip_hash, timestamp)
 billing_transactions      (id uuid PK, advertiser_id FK, type topup|spend, amount_cents, credits, description, stripe_payment_intent_id)
 publisher_payout_methods  (id uuid PK, publisher_id FK UNIQUE, method paypal|wise|bank, email, account_holder, account_number, swift_bic, updated_at)
+publisher_payouts         (id uuid PK, publisher_id FK, amount_cents, currency, method, status pending|processing|paid|failed, paypal_batch_id, paypal_item_id, period_start, period_end, failure_reason)
 verification_tokens  (identifier, token, expires — for NextAuth magic link)
 waitlist             (id uuid PK, name, email unique, type, company, source, created_at)
 ```

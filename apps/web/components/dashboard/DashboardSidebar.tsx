@@ -48,8 +48,8 @@ export default function DashboardSidebar({ role, userName, userEmail }: Props) {
               <path d="M10 2C8.5 2 7.1 2.4 5.9 3.1C8.7 4.2 10.7 6.9 10.7 10C10.7 13.1 8.7 15.8 5.9 16.9C7.1 17.6 8.5 18 10 18C14.4 18 18 14.4 18 10C18 5.6 14.4 2 10 2Z" fill="#C9A84C" />
             </svg>
           </div>
-          <span className="font-display font-bold text-white text-lg">
-            Halal<span className="text-brand-gold">Ads</span>
+          <span className="font-display font-bold text-white text-base leading-tight">
+            Islamic<span className="text-brand-gold">AdNetwork</span>
           </span>
         </Link>
       </div>
