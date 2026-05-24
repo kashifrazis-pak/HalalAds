@@ -1,8 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { BarChart3, Globe, Loader2, CheckCircle2 } from "lucide-react";
 
@@ -40,8 +38,6 @@ const roles = [
 ];
 
 export default function OnboardingPage() {
-  const router = useRouter();
-  const { update } = useSession();
   const [selected, setSelected] = useState<"advertiser" | "publisher" | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -61,9 +57,8 @@ export default function OnboardingPage() {
         setError(data.error ?? "Something went wrong. Please try again.");
         return;
       }
-      // Force JWT refresh so the new role is written into the session token
-      await update();
-      router.push(selected === "advertiser" ? "/dashboard/advertiser" : "/dashboard/publisher");
+      // Hard navigate so the dashboard server component re-runs with the new profile
+      window.location.href = selected === "advertiser" ? "/dashboard/advertiser" : "/dashboard/publisher";
     } catch {
       setError("Network error. Please try again.");
     } finally {
