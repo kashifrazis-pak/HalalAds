@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import Script from "next/script";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { CheckCircle2, ArrowRight, HelpCircle } from "lucide-react";
@@ -8,6 +9,12 @@ export const metadata: Metadata = {
   title: "Pricing",
   description:
     "Simple, transparent pricing for advertisers and publishers. Start free, scale as you grow. No hidden fees.",
+  openGraph: {
+    title: "Pricing | Islamic Ad Network",
+    description: "Transparent halal advertising pricing. Start from $50 with no setup fees.",
+    url: "https://islamicadnetwork.com/pricing",
+  },
+  alternates: { canonical: "https://islamicadnetwork.com/pricing" },
 };
 
 const advertiserPlans = [
@@ -134,9 +141,24 @@ const faqs = [
   },
 ];
 
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqs.map(({ q, a }) => ({
+    "@type": "Question",
+    name: q,
+    acceptedAnswer: { "@type": "Answer", text: a },
+  })),
+};
+
 export default function PricingPage() {
   return (
     <>
+      <Script
+        id="faq-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
       <Navbar />
       <main>
         {/* Hero */}

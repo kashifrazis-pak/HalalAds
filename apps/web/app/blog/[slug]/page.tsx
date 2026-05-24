@@ -21,6 +21,21 @@ export async function generateMetadata({
   return {
     title: post.title,
     description: post.description,
+    openGraph: {
+      type: "article",
+      title: post.title,
+      description: post.description,
+      url: `https://islamicadnetwork.com/blog/${params.slug}`,
+      publishedTime: post.date,
+      authors: [post.author],
+      tags: [post.category, "halal advertising", "Islamic Ad Network"],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description: post.description,
+    },
+    alternates: { canonical: `https://islamicadnetwork.com/blog/${params.slug}` },
   };
 }
 

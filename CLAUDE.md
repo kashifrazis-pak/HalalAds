@@ -127,13 +127,13 @@ All commands run from `apps/web/`:
 npm run dev      # Start dev server → http://localhost:3000
 npm run build    # Production build (always verify this passes before finishing)
 npm run lint     # ESLint check
-npm test         # Jest unit + integration tests (213 tests across 30 suites)
+npm test         # Jest unit + integration tests (225 tests across 32 suites)
 npm run test:coverage   # Test run with coverage report
 npm run test:e2e        # Playwright end-to-end tests
 ```
 
 **Always run `npm run build` before marking any sprint complete.** The build must pass with zero errors.
-**Always run `npm test` after adding new API routes or components.** All 149 tests must stay green.
+**Always run `npm test` after adding new API routes or components.** All 225 tests must stay green.
 
 ---
 
@@ -205,13 +205,21 @@ npm run test:e2e        # Playwright end-to-end tests
 - `PAYPAL_CLIENT_ID`, `PAYPAL_CLIENT_SECRET`, `PAYPAL_MODE` (sandbox|live), `PAYPAL_WEBHOOK_ID`, `ADMIN_SECRET` env vars required
 - Dashboard sidebar brand name fixed: "HalalAds" → "IslamicAdNetwork"
 
-### 🔜 Sprint 6 — SEO, Performance & Polish
-- Metadata + OG tags for all pages
-- Sitemap.xml + robots.txt
-- Structured data (Organization, FAQPage schema)
-- Core Web Vitals audit (Lighthouse 90+ target)
-- Arabic RTL support
-- PostHog analytics integration
+### ✅ Sprint 6 — SEO, Performance & Polish (COMPLETE)
+- All marketing pages (`/`, `/advertisers`, `/publishers`, `/pricing`, `/about`, `/contact`, `/waitlist`, `/blog/[slug]`) have `metadata` exports with title, description, OG, Twitter, canonical
+- `/contact` and `/waitlist` refactored to server components — extracted interactive parts to `ContactForm.tsx` and `WaitlistContent.tsx` (client components)
+- `/pricing` — FAQPage JSON-LD structured data (`@type: FAQPage`) in `<Script>` tag
+- `/blog/[slug]` — full OpenGraph Article type metadata (publishedTime, authors, tags)
+- `/opengraph-image.tsx` — dynamic OG image via Next.js ImageResponse (edge runtime), 1200×630
+- Legal pages: `/privacy` (Privacy Policy), `/terms` (Terms of Service), `/halal-policy` (Halal Advertising Policy)
+- PostHog analytics — `posthog-js` integrated in `app/providers.tsx` with `PostHogPageView` component (pageview capture on route changes); enabled via `NEXT_PUBLIC_POSTHOG_KEY` + `NEXT_PUBLIC_POSTHOG_HOST` env vars
+- Sitemap.xml + robots.txt already in place from Sprint 4
+- Organization JSON-LD schema already in root layout from Sprint 4
+
+**Key Sprint 6 decisions:**
+- `useSearchParams()` in PostHogPageView must be wrapped in `<Suspense>` to avoid build-time prerender errors
+- Pages that use `useState`/hooks cannot export `metadata` — split into server page + client `*Content.tsx` component
+- FAQPage schema injected via `next/script` `<Script id="faq-schema">` tag, not inline in metadata
 
 ---
 
@@ -259,7 +267,7 @@ waitlist             (id uuid PK, name, email unique, type, company, source, cre
 - `SUPABASE_SERVICE_ROLE_KEY` server-only; never in client components or Edge runtime
 
 ### Test Suite
-- **213 tests across 30 suites** — all must stay green
+- **225 tests across 32 suites** — all must stay green
 - API route tests use `@jest-environment node` and mock `@/lib/auth`, `@/lib/supabase`, `@/lib/stripe`
 - Component tests use jsdom (default); mock `next/navigation`, `next-auth/react` via `jest.setup.ts`
 - Do NOT try to `delete window.location` or `Object.defineProperty(window, 'location', ...)` — non-configurable in jsdom
