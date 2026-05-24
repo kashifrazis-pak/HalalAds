@@ -1,0 +1,19 @@
+services:
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3000"
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder
+      SUPABASE_SERVICE_ROLE_KEY: placeholder
+      AUTH_SECRET: halalads-dev-secret-placeholder-32chars!!
+      AUTH_URL: http://localhost:3001
+      AUTH_TRUST_HOST: "true"
+      STRIPE_SECRET_KEY: sk_test_placeholder
+      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: pk_test_placeholder
+      RESEND_API_KEY: re_placeholder
+    restart: unless-stopped
