@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   const session = await auth();
-  if (!session?.user?.id) {
+  if (!session?.user?.email) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -17,10 +17,16 @@ export async function POST(req: Request) {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const db = createServiceClient() as any;
+  const { data: userRow } = await db
+    .from("users")
+    .select("id")
+    .eq("email", session.user.email)
+    .maybeSingle();
+
   const { data: advertiser } = await db
     .from("advertisers")
     .select("id")
-    .eq("user_id", session.user.id)
+    .eq("user_id", userRow?.id ?? "")
     .single();
 
   if (!advertiser) {
