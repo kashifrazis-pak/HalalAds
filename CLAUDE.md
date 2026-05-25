@@ -182,10 +182,6 @@ npm run test:e2e        # Playwright end-to-end tests
 - `billing_transactions` table for full payment audit trail
 - Ad unit creation live — `/api/ad-units` POST, `/dashboard/publisher/ad-units/[id]` detail page with real embed snippet
 - Embed code uses real DB unit UUID (not random placeholder)
-- Real ad serving engine: `/api/serve/[adunit]` queries Supabase for active campaigns, filters by geo/budget/size/dates, sorts by highest bid (waterfall), returns winner with real tracking URLs
-- Impression tracking: `/api/track/impression` — inserts impression record, CPM billing (deducts bid_amount/1000 from campaign spend + advertiser balance)
-- Click tracking: `/api/track/click` — inserts click record, CPC billing (deducts bid_amount from campaign spend + advertiser balance), redirects with UTM params
-- Tracking URL params: `cid` (campaign_id), `crid` (creative_id), `auid` (ad_unit_id), `iid` (pre-generated impression UUID for click→impression linking)
 
 **Key bugs fixed in Sprint 4:**
 - NextAuth v5 JWT/session callbacks must NEVER call Supabase — they run in Edge runtime which lacks Node.js APIs
@@ -207,6 +203,21 @@ npm run test:e2e        # Playwright end-to-end tests
 - PayPal webhook handles: SUCCEEDED (→ paid), FAILED/RETURNED (→ failed), UNCLAIMED (→ failure_reason note, stays processing)
 - `PAYPAL_CLIENT_ID`, `PAYPAL_CLIENT_SECRET`, `PAYPAL_MODE` (sandbox|live), `PAYPAL_WEBHOOK_ID`, `ADMIN_SECRET` env vars required
 - Dashboard sidebar brand name fixed: "HalalAds" → "IslamicAdNetwork"
+
+### ✅ Sprint 5b — Real Ad Serving Engine (COMPLETE)
+- `/api/serve/[adunit]` — real ad decision logic: validates ad unit, queries active campaigns, filters by geo-targeting (countries array), remaining budget, creative size match, and date range; sorts by `bid_amount` DESC (waterfall); serves highest-bidding eligible campaign
+- Pre-generates impression UUID in serve route so click tracking can link back to the exact impression (for fraud analysis)
+- `/api/track/impression` — inserts to `impressions` table with hashed IP (Web Crypto SHA-256), country, user-agent; CPM billing deducts `bid_amount / 1000` from campaign spend + advertiser balance
+- `/api/track/click` — inserts to `clicks` table; CPC billing deducts full `bid_amount`; redirects to destination with `utm_source=islamicadnetwork&utm_medium=display`
+- Tracking URL params: `cid` (campaign_id), `crid` (creative_id), `auid` (ad_unit_id), `iid` (impression UUID)
+- Bot detection on all three routes (regex matching `bot|crawler|spider|scraper|headless`)
+- All routes use `runtime = "edge"` for global low-latency serving
+
+**Key ad serving decisions:**
+- Supabase JS v2 uses fetch internally — works fine in edge runtime, no Node.js deps
+- IP hashing uses Web Crypto API (`crypto.subtle.digest`) — available in both edge and Node.js 18+
+- Spend updates are read-then-write (not atomic RPC) — acceptable at MVP scale; add Upstash Redis + Postgres RPCs at scale
+- `impressionId = crypto.randomUUID()` generated at serve time, passed in both tracking URLs
 
 ### ✅ Sprint 6 — SEO, Performance & Polish (COMPLETE)
 - All marketing pages (`/`, `/advertisers`, `/publishers`, `/pricing`, `/about`, `/contact`, `/waitlist`, `/blog/[slug]`) have `metadata` exports with title, description, OG, Twitter, canonical
@@ -276,6 +287,46 @@ waitlist             (id uuid PK, name, email unique, type, company, source, cre
 - Do NOT try to `delete window.location` or `Object.defineProperty(window, 'location', ...)` — non-configurable in jsdom
 - Supabase chain mocks: `eq()` must return the chain (not a Promise); add `then: (resolve) => Promise.resolve({error:null}).then(resolve)` to support `await db.from(...).update(...).eq(...)` patterns
 - `lib/paypal.ts` tests mock `global.fetch` — must be set BEFORE importing the module
+- Ad serve route (`api-serve.test.ts`) mocks `@/lib/supabase` with `from()` returning different chains per table name
+- Tracking routes (`api-track.test.ts`, `api-tracking.test.ts`, `tracking-api.test.ts`) mock `@/lib/supabase` — impression route returns pixel (200) for all cases including missing params (not 204)
+- `NextResponse.redirect` defaults to 307; always pass `{ status: 302 }` explicitly for redirect routes
+
+### Test File Map
+| File | TC Range | What it covers |
+|---|---|---|
+| `unit/utils.test.ts` | TC-U-001–006 | cn() utility |
+| `unit/blog.test.ts` | TC-U-010–016 | MDX blog helpers |
+| `unit/api-waitlist.test.ts` | TC-U-020–026 | /api/waitlist POST |
+| `unit/api-tracking.test.ts` | TC-U-030–036 | impression pixel + click redirect |
+| `unit/api-onboarding.test.ts` | TC-U-040–047 | /api/onboarding POST |
+| `unit/api-campaigns.test.ts` | TC-U-050–065 | /api/campaigns POST |
+| `unit/api-campaigns-patch.test.ts` | TC-U-066–079 | /api/campaigns/[id] PATCH |
+| `unit/api-billing-checkout.test.ts` | TC-U-080–086 | /api/billing/checkout |
+| `unit/api-billing-webhook.test.ts` | TC-U-087–089 | /api/billing/webhook |
+| `unit/api-serve.test.ts` | TC-U-090–102 | /api/serve/[adunit] decision logic |
+| `unit/paypal.test.ts` | TC-U-100–107 | lib/paypal OAuth + Payouts API |
+| `unit/api-track.test.ts` | TC-U-110–122 | impression + click tracking routes |
+| `unit/api-ad-units.test.ts` | TC-U-various | /api/ad-units POST |
+| `unit/stripe.test.ts` | TC-U-various | lib/stripe helpers |
+| `integration/waitlist-api.test.ts` | TC-I-001–008 | waitlist full flow |
+| `integration/tracking-api.test.ts` | TC-I-010–018 | impression + click full cycle |
+| `integration/campaigns-api.test.ts` | TC-I-020–026 | campaign creation flow |
+| `integration/billing-api.test.ts` | TC-I-030–036 | Stripe billing flow |
+| `integration/publisher-payout-api.test.ts` | TC-I-040–049 | publisher payout setup |
+| `integration/publisher-payouts-history.test.ts` | TC-I-050–054 | payout history |
+| `integration/admin-payouts-process.test.ts` | TC-I-055–061 | admin payout trigger |
+| `integration/paypal-webhook.test.ts` | TC-I-062–066 | PayPal webhook handler |
+| `components/Navbar.test.tsx` | TC-C-010–016 | Navbar rendering + mobile menu |
+| `components/WaitlistSection.test.tsx` | TC-C-020–027 | WaitlistSection component |
+| `components/StatCard.test.tsx` | TC-C-030–036 | StatCard component |
+| `components/CampaignControls.test.tsx` | TC-C-040–046 | pause/activate controls |
+| `components/AdUnitCodePanel.test.tsx` | TC-C-050–056 | embed code panel |
+| `components/PayoutSetupForm.test.tsx` | TC-C-060–067 | payout setup form |
+| `components/PayoutHistory.test.tsx` | TC-C-070–075 | payout history display |
+| `components/DashboardSidebar.test.tsx` | TC-C-080–086 | sidebar nav + role-based links |
+| `components/ContactForm.test.tsx` | TC-C-090–096 | contact form |
+| `components/WaitlistContent.test.tsx` | TC-C-097–101 | waitlist form toggle |
+| `components/AddCreditsForm.test.tsx` | TC-C-various | billing credits form |
 
 ---
 
