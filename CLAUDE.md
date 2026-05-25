@@ -127,7 +127,7 @@ All commands run from `apps/web/`:
 npm run dev      # Start dev server → http://localhost:3000
 npm run build    # Production build (always verify this passes before finishing)
 npm run lint     # ESLint check
-npm test         # Jest unit + integration tests (225 tests across 32 suites)
+npm test         # Jest unit + integration tests (243 tests across 33 suites)
 npm run test:coverage   # Test run with coverage report
 npm run test:e2e        # Playwright end-to-end tests
 ```
@@ -182,7 +182,10 @@ npm run test:e2e        # Playwright end-to-end tests
 - `billing_transactions` table for full payment audit trail
 - Ad unit creation live — `/api/ad-units` POST, `/dashboard/publisher/ad-units/[id]` detail page with real embed snippet
 - Embed code uses real DB unit UUID (not random placeholder)
-- Stub API routes in place: `/api/serve/[adunit]`, `/api/track/impression`, `/api/track/click`
+- Real ad serving engine: `/api/serve/[adunit]` queries Supabase for active campaigns, filters by geo/budget/size/dates, sorts by highest bid (waterfall), returns winner with real tracking URLs
+- Impression tracking: `/api/track/impression` — inserts impression record, CPM billing (deducts bid_amount/1000 from campaign spend + advertiser balance)
+- Click tracking: `/api/track/click` — inserts click record, CPC billing (deducts bid_amount from campaign spend + advertiser balance), redirects with UTM params
+- Tracking URL params: `cid` (campaign_id), `crid` (creative_id), `auid` (ad_unit_id), `iid` (pre-generated impression UUID for click→impression linking)
 
 **Key bugs fixed in Sprint 4:**
 - NextAuth v5 JWT/session callbacks must NEVER call Supabase — they run in Edge runtime which lacks Node.js APIs
@@ -267,7 +270,7 @@ waitlist             (id uuid PK, name, email unique, type, company, source, cre
 - `SUPABASE_SERVICE_ROLE_KEY` server-only; never in client components or Edge runtime
 
 ### Test Suite
-- **225 tests across 32 suites** — all must stay green
+- **243 tests across 33 suites** — all must stay green
 - API route tests use `@jest-environment node` and mock `@/lib/auth`, `@/lib/supabase`, `@/lib/stripe`
 - Component tests use jsdom (default); mock `next/navigation`, `next-auth/react` via `jest.setup.ts`
 - Do NOT try to `delete window.location` or `Object.defineProperty(window, 'location', ...)` — non-configurable in jsdom

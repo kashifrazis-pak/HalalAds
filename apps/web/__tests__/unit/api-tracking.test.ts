@@ -6,6 +6,30 @@
  * Unit tests for ad tracking API routes — impression pixel and click redirect
  */
 import { NextRequest } from "next/server";
+
+const mockDb = {
+  from: jest.fn(() => {
+    const chain: Record<string, unknown> = {};
+    chain.select = jest.fn(() => chain);
+    chain.eq = jest.fn(() => chain);
+    chain.insert = jest.fn(() => Promise.resolve({ data: null, error: null }));
+    chain.update = jest.fn(() => chain);
+    chain.single = jest.fn(() =>
+      Promise.resolve({
+        data: { id: "c1", type: "cpc", bid_amount: 100, spend: 0, advertiser_id: "adv-1", balance: 5000 },
+        error: null,
+      })
+    );
+    chain.then = (resolve: (v: unknown) => unknown) =>
+      Promise.resolve({ data: null, error: null }).then(resolve);
+    return chain;
+  }),
+};
+
+jest.mock("@/lib/supabase", () => ({
+  createServiceClient: jest.fn(() => mockDb),
+}));
+
 import { GET as impressionGET } from "@/app/api/track/impression/route";
 import { GET as clickGET } from "@/app/api/track/click/route";
 
@@ -17,10 +41,11 @@ describe("GET /api/track/impression", () => {
     expect(res.headers.get("content-type")).toBe("image/gif");
   });
 
-  it("TC-U-031: returns 204 when aid or pub is missing", async () => {
+  it("TC-U-031: returns pixel (200) when required params are missing", async () => {
     const req = new NextRequest("http://localhost/api/track/impression");
     const res = await impressionGET(req);
-    expect(res.status).toBe(204);
+    expect(res.status).toBe(200);
+    expect(res.headers.get("content-type")).toBe("image/gif");
   });
 
   it("TC-U-032: sets no-cache headers to prevent browser caching", async () => {
@@ -39,7 +64,9 @@ describe("GET /api/track/impression", () => {
 describe("GET /api/track/click", () => {
   it("TC-U-034: redirects to destination URL with UTM params", async () => {
     const dest = "https://halalfood.com/landing";
-    const req = new NextRequest(`http://localhost/api/track/click?aid=ad_001&url=${encodeURIComponent(dest)}`);
+    const req = new NextRequest(
+      `http://localhost/api/track/click?cid=camp-001&auid=unit-abc&url=${encodeURIComponent(dest)}`
+    );
     const res = await clickGET(req);
     expect(res.status).toBe(302);
     const location = res.headers.get("location");
